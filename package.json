@@ -1,0 +1,29 @@
+{
+  "name": "level-scout",
+  "version": "0.0.0",
+  "description": "Range search with a query plan",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/*.js | tap-spec",
+    "live-test": "watch-run -i -p lib/**/*.js tape test/*.js | tap-spec"
+  },
+  "author": "Vincent Weevers (http://vincentweevers.nl)",
+  "license": "MIT",
+  "dependencies": {
+    "bytewise": "~0.8.0",
+    "debug": "~2.1.3",
+    "deep-dot": "0.0.2",
+    "hyperloglog": "~0.1.2",
+    "inherits": "~2.0.1",
+    "js-combinatorics": "~0.5.0",
+    "sigmund": "~1.0.0",
+    "sorted-intersect-stream": "~2.0.0",
+    "through2": "~0.6.3"
+  },
+  "devDependencies": {
+    "concat-stream": "~1.4.8",
+    "level-sublevel": "~6.4.0",
+    "level-test": "~1.7.0",
+    "tape": "~4.0.0"
+  }
+}
