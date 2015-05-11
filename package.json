@@ -2,6 +2,7 @@
   "name": "level-scout",
   "version": "0.0.0",
   "description": "Range search with a query plan",
+  "keywords": [ "level", "search", "index", "range", "query", "bytewise"],
   "main": "index.js",
   "scripts": {
     "test": "tape test/*.js | tap-spec",
@@ -11,7 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "bytewise": "~0.8.0",
-    "debug": "~2.1.3",
+    "debug": "~2.2.0",
     "deep-dot": "0.0.2",
     "hyperloglog": "~0.1.2",
     "inherits": "~2.0.1",
@@ -25,5 +26,13 @@
     "level-sublevel": "~6.4.0",
     "level-test": "~1.7.0",
     "tape": "~4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vweevers/level-scout"
+  },
+  "homepage": "https://github.com/vweevers/level-scout",
+  "bugs": {
+    "url": "https://github.com/vweevers/level-scout/issues"
   }
 }
