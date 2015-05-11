@@ -80,19 +80,19 @@ test('index delete', function(t){
   }
 })
 
-test('cardinality', function(t){
+test('selectivity', function(t){
   t.plan(2)
 
   var db = createDb(true)
   var color = db.index('color')
 
-  t.equal(color.cardinality(), null)
+  t.equal(color.selectivity(), null)
 
   db.batch([
     {key: 1, value: {color: 'red'}},
     {key: 2, value: {color: 'orange'}},
     {key: 3, value: {color: 'red'}}
   ], function(){
-    t.equal(color.cardinality(), 2/3)
+    t.equal(color.selectivity(), 2/3)
   })
 })
