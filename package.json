@@ -1,8 +1,15 @@
 {
   "name": "level-scout",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Range search with a query plan",
-  "keywords": [ "level", "search", "index", "range", "query", "bytewise"],
+  "keywords": [
+    "level",
+    "search",
+    "index",
+    "range",
+    "query",
+    "bytewise"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "tape test/*.js | tap-spec",
