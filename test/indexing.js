@@ -38,46 +38,14 @@ test('indexes', function(t) {
       {key: 'b', value: {x: 200, y: 300}},
       {key: 'c', value: {x: 300, y: 400}}
     ], function(){
-      xy.viewStream({gt: 200}).on('data', function(data){
+      xy.createViewStream({gt: 200}).on('data', function(data){
         t.equal(data.key, 'c', 'normalizes range')
       })
-      xy.viewStream({gte: [200, 300]}).once('data', function(data){
+      xy.createViewStream({gte: [200, 300]}).once('data', function(data){
         t.equal(data.key, 'b', 'sorted')
       })
     })
   })
-})
-
-test('index delete', function(t){
-  t.plan(1)
-
-  var db = createDb(true)
-  var color = db.index('color')
-
-  db.batch([
-    {key: 'R', value: {color: 'red'}},
-    {key: 'G', value: {color: 'green'}},
-    {key: 'B', value: {color: 'blue'}}
-  ], function(){
-
-    // TODO: Uh. Actually test if index key is removed
-    db.del('G', afterGC(color, function(){
-      db.put('P', {color: 'pink'}, function(){
-        color.viewStream({keys: true, values: false})
-        .pipe(concat({encoding: 'object'}, function(keys){
-          t.deepEqual(keys, [ 'B', 'P', 'R' ])
-        }))
-      })
-    }))
-
-  })
-
-  // so we can see the debug output
-  function afterGC(index, cb) {
-    return function() {
-      index.once('garbage', cb)
-    }
-  }
 })
 
 test('selectivity', function(t){

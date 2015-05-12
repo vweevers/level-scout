@@ -18,6 +18,7 @@
   "author": "Vincent Weevers (http://vincentweevers.nl)",
   "license": "MIT",
   "dependencies": {
+    "after": "~0.8.1",
     "bytewise": "~0.8.0",
     "debug": "~2.2.0",
     "deep-dot": "0.0.2",
