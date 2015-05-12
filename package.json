@@ -1,6 +1,6 @@
 {
   "name": "level-scout",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Range search with a query plan",
   "keywords": [
     "level",
