@@ -32,7 +32,7 @@ function initDatabase(db, opts) {
       var before = ops.length
 
       for(var k in db.indexes)
-        db.indexes[k].changed(op.key, op.value, add)
+        db.indexes[k].update(op.key, op.value, add)
 
       // Cancel scheduled gc ops, if any
       var added = ops.length - before

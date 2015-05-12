@@ -81,7 +81,7 @@ test('selectivity', function(t){
   var db = createDb(true)
   var color = db.index('color')
 
-  t.equal(color.selectivity(), null)
+  t.equal(color.selectivity(), 0)
 
   db.batch([
     {key: 1, value: {color: 'red'}},

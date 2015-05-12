@@ -321,6 +321,58 @@ test('non objects', function(t){
   })
 })
 
+test('favor high selectivity', function(t){
+  t.test('x vs y', function(t){
+    t.plan(4)
+
+    var db = createDb()
+    var x = index(db, 'x'), y = index(db, 'y')
+
+    db.batch([
+      { key: 1, value: { x: 0, y: 0 } },
+      { key: 2, value: { x: 1, y: 1 } },
+      { key: 3, value: { x: 0, y: 2 } },
+      { key: 4, value: { x: 1, y: 3 } },
+      { key: 5, value: { x: 0, y: 4 } },
+    ], function(){
+      t.equal(x.selectivity(), 2/5, 'x selectivity: 0.2')
+      t.equal(y.selectivity(), 5/5, 'y selectivity: 1.0')
+
+      search(db, {
+        x: { gt: 0 }, y: { gt: 0 }
+      }, {keys: true, values: false}, function(err, items, plan){
+        t.deepEqual(items, [2,4], 'data ok')
+        t.deepEqual(flat(plan), [ { index: 'y', range: { gt: [ 0 ] } } ], 'y won')
+      })
+    })
+  })
+
+  t.test('y vs x', function(t){
+    t.plan(4)
+
+    var db = createDb()
+    var x = index(db, 'x'), y = index(db, 'y')
+
+    db.batch([
+      { key: 1, value: { x: 0, y: 0 } },
+      { key: 2, value: { x: 1, y: 1 } },
+      { key: 3, value: { x: 2, y: 0 } },
+      { key: 4, value: { x: 3, y: 1 } },
+      { key: 5, value: { x: 4, y: 0 } },
+    ], function(){
+      t.equal(x.selectivity(), 5/5, 'x selectivity: 1.0')
+      t.equal(y.selectivity(), 2/5, 'y selectivity: 0.2')
+
+      search(db, {
+        x: { gt: 0 }, y: { gt: 0 }
+      }, {keys: true, values: false}, function(err, items, plan){
+        t.deepEqual(items, [2,4], 'data ok')
+        t.deepEqual(flat(plan), [ { index: 'x', range: { gt: [ 0 ] } } ], 'x won')
+      })
+    })
+  })
+})
+
 test.skip('pseudocode - merge join', function(t){
   // SELECT * FROM employee e, company c WHERE e.company_id = c.id
 
