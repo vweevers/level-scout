@@ -53,8 +53,8 @@ search(db, { year: 1988 }, function(err, results, plan){
 ```js
 var level    = require(..)
   , sublevel = require('level-sublevel/bytewise')
-  , index    = require('level-scout').index
-  , search   = require('level-scout').search
+  , index    = require('level-scout/index')
+  , search   = require('level-scout/search')
 
 var db = sublevel(level(), { valueEncoding: 'json' })
 

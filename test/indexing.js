@@ -1,7 +1,6 @@
-var test = require('tape')
-  , concat = require('concat-stream')
+var test     = require('tape')
+  , concat   = require('concat-stream')
   , createDb = require('./util/create-db')
-  , util = require('util')
 
 test('indexes', function(t) {
   var db = createDb(true)

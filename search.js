@@ -1,16 +1,14 @@
 var through2 = require('through2')
-  , searchStream = require('./streams/search')
+  , searchStream = require('./lib/streams/search')
 
-module.exports = search
-
-search.install = function(db) {
-  db.search = search.bind(null, db)
-}
-
-function search(db, query, opts, cb) {
+module.exports = function search(db, query, opts, cb) {
   if (typeof opts == 'function') cb = opts, opts = null
   var stream = searchStream(db, query, opts)
   return cb ? concat(stream, cb) : stream
+}
+
+module.exports.install = function(db) {
+  db.search = module.exports.bind(null, db)
 }
 
 function concat(stream, cb) {

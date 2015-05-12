@@ -1,7 +1,7 @@
-var test = require('tape')
-  , queryFilter = require('../').filter
-  , concat = require('concat-stream')
-  , createDb = require('./util/create-db')
+var test        = require('tape')
+  , filter      = require('../filter')
+  , concat      = require('concat-stream')
+  , createDb    = require('./util/create-db')
 
 test('query filter (does not use indexes)', function(t) {
   var db = createDb()
@@ -36,7 +36,7 @@ test('query filter (does not use indexes)', function(t) {
 
   function q(query, expectedKeys, msg) {
     // TODO: { keys: true, values: false } opts doesn't work.
-    db.createReadStream().pipe(queryFilter(query)).pipe(concat(function(items){
+    filter(db, query).pipe(concat(function(items){
       var keys = items.map(function(item){
         return item.key
       })

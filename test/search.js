@@ -1,28 +1,9 @@
-var index = require('../').index
-  , search = require('../').search
-  , test = require('tape')
-  , concat = require('concat-stream')
+var index    = require('../index')
+  , search   = require('../search')
+  , test     = require('tape')
+  , concat   = require('concat-stream')
   , through2 = require('through2').obj
   , createDb = require('./util/create-db')
-
-function flat(plan) {
-  return plan.map(function(item){
-    if (Array.isArray(item)) return flat(item)
-    if (item.index) item.index = item.index.name
-    if (item.intersect) {
-      item.intersect = flat(item.intersect)
-      item.intersect.sort(function(a, b){
-        if (a.index===b.index) return 0
-        return a.index < b.index ? -1 : 1
-      })
-    }
-    
-    delete item.map
-    delete item.match
-    
-    return item
-  })
-}
 
 test('custom index map function', function(t) {
   var db = createDb()
@@ -360,3 +341,22 @@ test.skip('pseudocode - function as query predicate', function(t){
     }
   })
 })
+
+function flat(plan) {
+  return plan.map(function(item){
+    if (Array.isArray(item)) return flat(item)
+    if (item.index) item.index = item.index.name
+    if (item.intersect) {
+      item.intersect = flat(item.intersect)
+      item.intersect.sort(function(a, b){
+        if (a.index===b.index) return 0
+        return a.index < b.index ? -1 : 1
+      })
+    }
+    
+    delete item.map
+    delete item.match
+    
+    return item
+  })
+}
