@@ -19,12 +19,11 @@
   "license": "MIT",
   "dependencies": {
     "after": "~0.8.1",
-    "bytewise": "~0.8.0",
+    "bytewise": "~1.0.0",
     "debug": "~2.2.0",
     "deep-dot": "0.0.2",
     "hyperloglog": "~0.1.2",
     "inherits": "~2.0.1",
-    "js-combinatorics": "~0.5.0",
     "sigmund": "~1.0.0",
     "sorted-intersect-stream": "~2.0.0",
     "through2": "~0.6.3"
