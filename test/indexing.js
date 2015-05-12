@@ -1,6 +1,7 @@
 var test = require('tape')
   , concat = require('concat-stream')
   , createDb = require('./util/create-db')
+  , util = require('util')
 
 test('indexes', function(t) {
   var db = createDb(true)
@@ -46,6 +47,33 @@ test('indexes', function(t) {
       })
     })
   })
+})
+
+test('property tree', function(t){
+  var db = createDb(true)
+
+  var ab = db.index(['a', 'b'])
+  t.deepEqual(db.propertyTree, { a: { b: { __index: ab } } })
+
+  var a = db.index(['a'])
+  t.deepEqual(db.propertyTree, { a: { __index: a, b: { __index: ab } } })
+
+  var abcd = db.index(['a', 'b', 'c', 'd'])
+  var ba = db.index(['b', 'a'])
+  var beep = db.index('beep')
+
+  t.deepEqual(db.propertyTree, {
+    a: { __index: a,
+          b: {
+            __index: ab, c: {
+            d: { __index: abcd } }
+          }
+    },
+    b: { a: { __index: ba } },
+    beep: { __index: beep }
+  })
+
+  t.end()
 })
 
 test('selectivity', function(t){

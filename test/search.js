@@ -271,8 +271,8 @@ test('will not intersect non-equi range on compound indexes', function(t){
   t.plan(2)
   var db = createDb()
 
-  index(db, ['a', 'b'])
   index(db, ['c', 'd'])
+  index(db, ['a', 'b'])
 
   db.batch([
     {key: 1, value: { a: 9, b: 2, c: 2, d: 4 }},

@@ -65,9 +65,11 @@ test('gc queue is flushed if full', function(t){
 
       db.del('G')
       db.once('gc', function(){
-        color.get(['green', 'G'], function(err, key){
-          t.ok(err, 'index key removed')
-        })
+        setTimeout(function(){
+          color.get(['green', 'G'], function(err, key){
+            t.ok(err, 'index key removed')
+          })
+        }, 300)
       })
     })
   })
