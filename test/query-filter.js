@@ -42,7 +42,7 @@ test('query filter (does not use indexes)', function(t) {
 
   function q(query, expectedKeys, msg) {
     // TODO: { keys: true, values: false } opts doesn't work.
-    filter(db, query).pipe(concat(function(items){
+    db.createReadStream().pipe(filter(query)).pipe(concat(function(items){
       var keys = items.map(function(item){
         return item.key
       })
