@@ -8,14 +8,17 @@ This is experimental. API is unstable, documentation missing, terminology possib
 
 ## Quick overview
 
-Index capabilities:
-
 ```js
-index(db, 'age') // Single property index
-index(db, 'owner.lastname') // Nested property
+var index  = require('level-scout/index')
+    search = require('level-scout/search')
+    select = require('level-scout/select')
+    filter = require('level-scout/filter')
 
-// Compound index (order matters)
-index(db, ['a', 'b', 'c']) 
+var db = ..
+
+index(db, 'age')            // Single property index
+index(db, 'owner.lastname') // Nested property
+index(db, ['a', 'b', 'c'])  // Compound index
 
 // Compound index with custom mapper. You
 // can now search for `sum` even though it's
@@ -25,27 +28,34 @@ index(db, ['a', 'sum'], function(key, entity){
   return [entity.a, entity.a + entity.b]
 })
 
-// Stats (work in progress)
-index(db, 'color').cardinality()
+// Insert some data
+db.batch(..)
 
-```
-
-Search capabilities:
-
-```js
-// Returns a stream
-search(db, { x: 3 })
-search(db, { x: { eq: 3 }})
-search(db, { x: { gt: 50, lt: 100 }, y: {lte: 250} )
-search(db, { name: 'kangaroo' })
-search(db, { name: { gt: 'kanga' } })
-
-// But you can also pass a callback
-search(db, { year: 1988 }, function(err, results, plan){
-  // Note: `plan` contains debug info about the selected
-  // access path and filters
+// Would select the "a, sum" index as access
+// path, because those combined predicates are
+// more selective than "age" - and "color" is not
+// indexed.
+var stream = search(db, {
+  a: 45,
+  sum: { gte: 45, lt: 60 },
+  color: 'red',
+  age: 300
 })
 
+// Get a subset of each entity
+.pipe(select({the_age: 'age', color: true}))
+
+// Filter some more (would yield no results)
+.pipe(filter({ the_age: { lt: 100 } }))
+```
+
+Search with a callback:
+
+```js
+search(db, { year: 1988 }, function(err, results, plan){
+  // `plan` contains debug info about the selected
+  // access path and filters
+})
 ```
 
 ## Setup
@@ -58,9 +68,8 @@ var level    = require(..)
 
 var db = sublevel(level(), { valueEncoding: 'json' })
 
-index(db, 'x')
-search(db, {x: 10})
-
+index(db, ..)
+search(db, ..)
 ```
 
 Or attach the methods to your database:
@@ -70,6 +79,10 @@ index.install(db)
 search.install(db)
 
 db.index('x')
-db.search({x: 10})
 
+db.put('key', {x: 10 }, function(){
+  db.search({x: 10}, function(err, results){
+    // ..
+  })
+})
 ```
