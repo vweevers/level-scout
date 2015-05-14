@@ -22,7 +22,7 @@
     "bytewise": "~1.0.0",
     "debug": "~2.2.0",
     "deep-dot": "0.0.2",
-    "hyperloglog": "~0.1.2",
+    "hyperloglog32": "~1.0.0",
     "inherits": "~2.0.1",
     "json-select": "~2.2.0",
     "sigmund": "~1.0.0",
