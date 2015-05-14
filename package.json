@@ -12,7 +12,7 @@
   ],
   "main": "index.js",
   "scripts": {
-    "test": "tape test/*.js | tap-spec",
+    "test": "tape test/*.js",
     "live-test": "watch-run -i -p lib/**/*.js tape test/*.js | tap-spec"
   },
   "author": "Vincent Weevers (http://vincentweevers.nl)",

@@ -1,0 +1,24 @@
+version: "{build}"
+skip_tags: true
+shallow_clone: true
+build: off
+
+skip_commits:
+  # Skip stable release commits
+  message: /^ *v? *\d+\.\d+\.\d+ *$/
+
+environment:
+  matrix:
+    - nodejs_version: "0.10"
+    - nodejs_version: "1"
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - set CI=true
+  - npm i tape -g
+  - npm install
+
+test_script:
+  - node --version
+  - npm --version
+  - npm test

@@ -1,6 +1,8 @@
 # level-scout
 
-**Range syntax + bytewise encoded indexes + stream filters + query planner = pretty awesome search capabilities. A search will use a range query on the most optimal index, even intersect indexes if possible, or do a full scan.**
+**ltgt syntax + bytewise encoded indexes + stream filters + query planner = pretty awesome search capabilities. A search will use a range query on the most optimal index, even intersect indexes if possible, or do a full scan.**
+
+[![npm status](http://img.shields.io/npm/v/level-scout.svg?style=flat-square)](https://www.npmjs.org/package/level-scout) [![Travis build status](https://img.shields.io/travis/vweevers/level-scout.svg?style=flat-square&label=travis)](http://travis-ci.org/vweevers/level-scout) [![AppVeyor build status](https://img.shields.io/appveyor/ci/vweevers/level-scout.svg?style=flat-square&label=appveyor)](https://ci.appveyor.com/project/vweevers/level-scout) [![Dependency status](https://img.shields.io/david/vweevers/level-scout.svg?style=flat-square)](https://david-dm.org/vweevers/level-scout)
 
 As an example, suppose you have a compound index on the `x` and `y` properties of your entities, resulting in index keys in the form of `[x, y, entity key]`. If you search for `x: 20, y: { gte: 5 }`, scout combines those predicates to a key range like `gte: [20, 5], lte: [20, undefined]`. But if you search for `x: { gte: 5 }, y: 20`, scout produces a ranged stream for `x` and filters that by `y`. Basically, scout can combine zero or more equality predicates with zero or one non-equality predicates, in the order of the index properties (so a compound "x, y" index is not the same as a "y, x" index). And maybe more in the future, if something like a "skip scan" is implemented.
 
