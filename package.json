@@ -24,6 +24,7 @@
     "hyperloglog32": "~1.0.0",
     "inherits": "~2.0.1",
     "json-select": "~2.2.0",
+    "level-schedule": "~1.0.1",
     "sigmund": "~1.0.0",
     "sorted-intersect-stream": "~2.0.0",
     "through2": "~0.6.3"

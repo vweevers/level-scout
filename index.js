@@ -1,5 +1,6 @@
 var after             = require('after')
   , garbageCollection = require('./lib/util/gc')
+  , statistics        = require('./lib/util/statistics')
   , tree              = require('./lib/util/property-tree')
   , Index             = require('./lib/index')
 
@@ -26,6 +27,8 @@ function initDatabase(db, opts) {
   db.propertyTree = tree.create()
 
   var gc = db.gc = garbageCollection(db, opts && opts.gc)
+
+  statistics(db, db.indexes)
 
   db.pre(function(op, add, ops){
     if (op.type != 'del') {

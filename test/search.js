@@ -335,6 +335,11 @@ test('favor high selectivity', function(t){
       { key: 4, value: { x: 1, y: 3 } },
       { key: 5, value: { x: 0, y: 4 } },
     ], function(){
+      // act as if stat job just completed
+      // (testing that job should be another test (TODO))
+      x.cardinality = 2; x.length = 5
+      y.cardinality = 5; y.length = 5
+
       t.equal(x.selectivity(), 2/5, 'x selectivity: 0.2')
       t.equal(y.selectivity(), 5/5, 'y selectivity: 1.0')
 
@@ -360,6 +365,10 @@ test('favor high selectivity', function(t){
       { key: 4, value: { x: 3, y: 1 } },
       { key: 5, value: { x: 4, y: 0 } },
     ], function(){
+      // act as if stat job just completed
+      y.cardinality = 2; y.length = 5
+      x.cardinality = 5; x.length = 5
+
       t.equal(x.selectivity(), 5/5, 'x selectivity: 1.0')
       t.equal(y.selectivity(), 2/5, 'y selectivity: 0.2')
 
