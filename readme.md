@@ -6,7 +6,7 @@
 
 As an example, suppose you have a compound index on the `x` and `y` properties of your entities, resulting in index keys in the form of `[x, y, entity key]`. If you search for `x: 20, y: { gte: 5 }`, scout combines those predicates to a key range like `gte: [20, 5], lte: [20, undefined]`. But if you search for `x: { gte: 5 }, y: 20`, scout produces a ranged stream for `x` and filters that by `y`. Basically, scout can combine zero or more equality predicates with zero or one non-equality predicates, in the order of the index properties (so a compound "x, y" index is not the same as a "y, x" index). And maybe more in the future, if something like a "skip scan" is implemented.
 
-This is experimental. API is unstable, documentation missing, terminology possibly garbled. Requires sublevel and leveldown (there are some unresolved issues with other backends like memdown).
+Note: the API and dependencies are unstable, documentation is missing, terminology possibly garbled. <strike>Requires sublevel and leveldown (there are some unresolved issues with other backends like memdown).</strike> **Requires `leveldown >= 1.0.0` or `level/memdown#v1.0.2`, and JSON value encoding. Incompatible with `level-sublevel`.**
 
 ## Quick overview
 
@@ -63,12 +63,11 @@ search(db, { year: 1988 }, function(err, results, plan){
 ## Setup
 
 ```js
-var level    = require(..)
-  , sublevel = require('level-sublevel/bytewise')
+var levelup  = require('levelup')
   , index    = require('level-scout/index')
   , search   = require('level-scout/search')
 
-var db = sublevel(level(), { valueEncoding: 'json' })
+var db = levelup('./db', { valueEncoding: 'json' })
 
 index(db, ..)
 search(db, ..)

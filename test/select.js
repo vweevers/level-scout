@@ -1,7 +1,7 @@
 var select   = require('../select')
-  , test     = require('tape')
+  , test     = require('./util/test')
 
-test('select', function(t) {
+test('select', false, function(t) {
   t.plan(8)
 
   select({hoi: 'k', a: true}).on('data', function(data){

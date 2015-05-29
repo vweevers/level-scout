@@ -1,13 +1,10 @@
 var index    = require('../index')
   , search   = require('../search')
-  , test     = require('tape')
+  , test     = require('./util/test')
   , concat   = require('concat-stream')
   , through2 = require('through2').obj
-  , createDb = require('./util/create-db')
 
-test('custom index map function', function(t) {
-  var db = createDb()
-
+test('custom index map function', function(t, db) {
   t.test('single property', function(t){
     t.plan(2)
 
@@ -65,10 +62,48 @@ test('custom index map function', function(t) {
   }
 })
 
-test('search with indexes', function(t){
+test('eq ends', {index: true, search: true}, function(t, db){
+  t.plan(3)
+
+  var x = db.index('x')
+  db.put('bar', {x: 5, y: 20}, function(){
+    var stream = db.search({ x: 5 })
+
+    t.deepEqual(flat(stream.plan), [ { index: 'x', range: { eq: [ 5 ] } }], 'plan ok')
+    stream.on('data', function(data){ t.equal(data.key, 'bar', 'data ok') })
+    stream.on('end', function(){ t.ok(true, 'ends')})
+  })
+})
+
+test('empty query does table scan', {index: true, search: true}, function(t, db){
+  t.plan(3)
+
+  var x = db.index('x')
+  db.put('bar', {x: 5, y: 20}, function(){
+    var stream = db.search({})
+
+    t.deepEqual(flat(stream.plan), [ 'Table scan' ], 'plan ok')
+    stream.on('data', function(data){ t.equal(data.key, 'bar', 'data ok') })
+    stream.on('end', function(){ t.ok(true, 'ends')})
+  })
+})
+
+test('empty predicate does table scan', {index: true, search: true}, function(t, db){
+  t.plan(3)
+
+  var x = db.index('x')
+  db.put('bar', {x: 5, y: 20}, function(){
+    var stream = db.search({x: {}})
+
+    t.deepEqual(flat(stream.plan), [ 'Table scan' ], 'plan ok')
+    stream.on('data', function(data){ t.equal(data.key, 'bar', 'data ok') })
+    stream.on('end', function(){ t.ok(true, 'ends')})
+  })
+})
+
+test('search with indexes', {index: true, search: true}, function(t, db){
   t.plan(13)
 
-  var db = createDb(true, true)
   var xy = db.index(['x', 'y'])
   var x = db.index('x')
   var y = db.index('y')
@@ -136,7 +171,7 @@ test('search with indexes', function(t){
         {index: 'x', range: { eq: [ 5 ] }},
         {index: 'y', range: { eq: [ 20 ] }},
       ]}
-    ], 'x (eq) and y (eq) indexes')
+    ], 'intersect x (eq) and y (eq)')
 
     stream4.pipe(concat(function(items){
       t.deepEqual(items, [{key: 'bar', value: {x:5, y:20}}], 'stream4 data ok')
@@ -151,10 +186,8 @@ test('search with indexes', function(t){
   })
 })
 
-test('table scan', function(t){
+test('table scan', { keyEncoding: 'json' }, function(t, db){
   t.plan(4)
-
-  var db = createDb()
 
   function q(query, expected, msg) {
     search(db, query, { keys: true, values: false }, function(err, keys){
@@ -174,9 +207,8 @@ test('table scan', function(t){
   })
 })
 
-test('intersect two indexes', function(t){
+test('intersect two indexes', function(t, db){
   t.plan(2)
-  var db = createDb()
 
   index(db, 'x')
   index(db, 'y')
@@ -199,9 +231,8 @@ test('intersect two indexes', function(t){
   })
 })
 
-test('intersect two compound indexes', function(t){
+test('intersect two compound indexes', function(t, db){
   t.plan(2)
-  var db = createDb()
 
   index(db, ['a', 'b'])
   index(db, ['c', 'd'])
@@ -225,9 +256,8 @@ test('intersect two compound indexes', function(t){
   })
 })
 
-test('will not intersect partial range on compound indexes', function(t){
+test('will not intersect partial range on compound indexes', function(t, db){
   t.plan(2)
-  var db = createDb()
 
   index(db, ['a', 'b'])
   index(db, ['c', 'd'])
@@ -248,9 +278,8 @@ test('will not intersect partial range on compound indexes', function(t){
   })
 })
 
-test('will not intersect non-equi range on compound indexes', function(t){
+test('will not intersect non-equi range on compound indexes', function(t, db){
   t.plan(2)
-  var db = createDb()
 
   index(db, ['c', 'd'])
   index(db, ['a', 'b'])
@@ -271,9 +300,8 @@ test('will not intersect non-equi range on compound indexes', function(t){
   })
 })
 
-test('lte + gt predicates on compound index', function(t){
+test('lte + gt predicates on compound index', function(t, db){
   t.plan(2)
-  var db = createDb()
 
   index(db, ['c', 'd'])
 
@@ -295,10 +323,9 @@ test('lte + gt predicates on compound index', function(t){
   })
 })
 
-test('non objects', function(t){
+test('non objects', function(t, db){
   t.plan(3)
 
-  var db = createDb()
   var suffix = index(db, 'suffix', function(key, value){
     return [ value.split('.')[1] ]
   })
@@ -321,11 +348,11 @@ test('non objects', function(t){
   })
 })
 
-test('favor high selectivity', function(t){
+test('favor high selectivity', function(t, base){
   t.test('x vs y', function(t){
     t.plan(4)
 
-    var db = createDb()
+    var db = base.sublevel('1')
     var x = index(db, 'x'), y = index(db, 'y')
 
     db.batch([
@@ -355,7 +382,7 @@ test('favor high selectivity', function(t){
   t.test('y vs x', function(t){
     t.plan(4)
 
-    var db = createDb()
+    var db = base.sublevel('2')
     var x = index(db, 'x'), y = index(db, 'y')
 
     db.batch([
@@ -382,7 +409,7 @@ test('favor high selectivity', function(t){
   })
 })
 
-test.skip('pseudocode - merge join', function(t){
+test.skip('pseudocode - merge join', function(t, db){
   // SELECT * FROM employee e, company c WHERE e.company_id = c.id
 
   var employeesByCompany = select(employees, {order: 'company_id'})
@@ -395,7 +422,7 @@ test.skip('pseudocode - merge join', function(t){
   })
 })
 
-test.skip('pseudocode - function as query predicate', function(t){
+test.skip('pseudocode - function as query predicate', function(t, db){
   search(db, {
     color: function(value) {
       return value == 'red'

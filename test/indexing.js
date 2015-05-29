@@ -1,9 +1,7 @@
-var test     = require('tape')
+var test     = require('./util/test')
   , concat   = require('concat-stream')
-  , createDb = require('./util/create-db')
 
-test('indexes', function(t) {
-  var db = createDb(true)
+test('indexes', {index: true}, function(t, db) {
   var xy = db.index(['x', 'y'])
 
   t.test('direct access', function(t){
@@ -48,9 +46,7 @@ test('indexes', function(t) {
   })
 })
 
-test('property tree', function(t){
-  var db = createDb(true)
-
+test('property tree', {index: true}, function(t, db){
   var ab = db.index(['a', 'b'])
   t.deepEqual(db.propertyTree, { a: { b: { __index: ab } } })
 
@@ -76,10 +72,9 @@ test('property tree', function(t){
 })
 
 // todo: is no longer updated immediately
-test.skip('selectivity', function(t){
+test.skip('selectivity', {index: true}, function(t, db){
   t.plan(2)
 
-  var db = createDb(true)
   var color = db.index('color')
 
   t.equal(color.selectivity(), 0)

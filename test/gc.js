@@ -1,17 +1,15 @@
-var test = require('tape')
-  , createDb = require('./util/create-db')
+var test = require('./util/test')
 
-test('gc queue is injected into batch', function(t){
+test('gc queue is injected into batch', {index: true}, function(t, db){
   t.plan(2)
 
-  var db = createDb(true)
   var color = db.index('color')
 
   db.put('G', {color: 'green'}, function(){
     color.get(['green', 'G'], function(err, key){
       t.equal(key, 'G', 'has index key')
 
-      db.del('G')
+      db.del('G', function(){})
       db.once('gc', function(){
         db.put('P', {color: 'pink'}, function(){
           color.get(['green', 'G'], function(err, key){
@@ -23,10 +21,9 @@ test('gc queue is injected into batch', function(t){
   })
 })
 
-test('gc queue is flushed after delay', function(t){
+test('gc queue is flushed after delay', {index: true}, function(t, db){
   t.plan(2)
 
-  var db = createDb(true)
   var color = db.index('color', { gc: { delay: 10 }})
 
   db.batch([
@@ -37,7 +34,7 @@ test('gc queue is flushed after delay', function(t){
     color.get(['green', 'G'], function(err, key){
       t.equal(key, 'G', 'has index key')
 
-      db.del('G')
+      db.del('G', function(){})
       db.once('gc', function(){
         setTimeout(function(){
           color.get(['green', 'G'], function(err, key){
@@ -49,10 +46,9 @@ test('gc queue is flushed after delay', function(t){
   })
 })
 
-test('gc queue is flushed if full', function(t){
+test('gc queue is flushed if full', {index: true}, function(t, db){
   t.plan(2)
 
-  var db = createDb(true)
   var color = db.index('color', { gc: { size: 1, delay: 60000 }})
 
   db.batch([
@@ -63,7 +59,7 @@ test('gc queue is flushed if full', function(t){
     color.get(['green', 'G'], function(err, key){
       t.equal(key, 'G', 'has index key')
 
-      db.del('G')
+      db.del('G', function(){})
       db.once('gc', function(){
         setTimeout(function(){
           color.get(['green', 'G'], function(err, key){
@@ -75,17 +71,16 @@ test('gc queue is flushed if full', function(t){
   })
 })
 
-test('queued gc op is canceled by new write', function(t){
+test('queued gc op is canceled by new write', {index: true}, function(t, db){
   t.plan(3)
 
-  var db = createDb(true)
   var color = db.index('color')
 
   db.put('G', {color: 'green'}, function(){
     color.get(['green', 'G'], function(err, key){
       t.equal(key, 'G', 'has index key')
 
-      db.del('G')
+      db.del('G', function(){})
       db.once('gc', function(){
         db.put('G', {color: 'pink'}, function(){
           color.get(['green', 'G'], function(err, key){
@@ -100,10 +95,9 @@ test('queued gc op is canceled by new write', function(t){
   })
 })
 
-test('a new write is requeued if gc is writing', function(t){
+test('a new write is requeued if gc is writing', {index: true}, function(t, db){
   t.plan(4)
 
-  var db = createDb(true)
   var color = db.index('color')
 
   var batch = db.batch
@@ -116,7 +110,7 @@ test('a new write is requeued if gc is writing', function(t){
     color.get(['green', 'G'], function(err, key){
       t.equal(key, 'G', 'has key')
 
-      db.del('G')
+      db.del('G', function(){})
       db.once('gc', function(){
         // Simulate delayed flush
         db.batch = delayedBatch

@@ -1,11 +1,8 @@
-var test        = require('tape')
+var test        = require('./util/test')
   , filter      = require('../filter')
   , concat      = require('concat-stream')
-  , createDb    = require('./util/create-db')
 
-test('query filter (does not use indexes)', function(t) {
-  var db = createDb()
-
+test('query filter (does not use indexes)', function(t, db) {
   t.plan(19)
 
   db.batch([
